@@ -17,8 +17,6 @@ export default defineConfig({
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
           'vendor-motion': ['motion'],
-          'vendor-markdown': ['marked', 'gray-matter', 'prism-react-renderer'],
-          'vendor-ai': ['@anthropic-ai/sdk']
         }
       }
     }
