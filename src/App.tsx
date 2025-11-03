@@ -68,30 +68,33 @@ function SlideshowPage() {
   // キーボード操作
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // 一覧表示中は操作を受け付けない
+      // 一覧表示中の操作
       if (showOverview) {
-        if (e.key === 'Escape') {
+        if (e.key === 'Escape' || e.key === 'ArrowDown') {
+          e.preventDefault();
           setShowOverview(false);
         }
         return;
       }
 
+      // 通常のスライド表示中の操作
       if (e.key === 'ArrowRight' || e.key === ' ') {
         e.preventDefault();
         nextSlide();
       } else if (e.key === 'ArrowLeft') {
         e.preventDefault();
         previousSlide();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setShowOverview(true);
       } else if (e.key >= '1' && e.key <= '9') {
         const index = parseInt(e.key) - 1;
         if (index < totalSlides) {
           goToSlide(index);
         }
       } else if (e.key === 'o' || e.key === 'O') {
-        // 'o'キーで一覧表示トグル
+        // 'o'キーでも一覧表示可能（後方互換性のため残す）
         setShowOverview(true);
-      } else if (e.key === 'Escape') {
-        setShowOverview(false);
       }
     };
 
@@ -106,6 +109,36 @@ function SlideshowPage() {
         <AnimatePresence mode="wait">
           {slides[currentIndex]}
         </AnimatePresence>
+
+        {/* 左クリックエリア（前のスライド） */}
+        {currentIndex > 0 && (
+          <button
+            onClick={previousSlide}
+            className="absolute left-0 top-0 h-full w-24 cursor-pointer opacity-0 hover:opacity-100 transition-opacity duration-300 group z-10"
+            aria-label="前のスライド"
+          >
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 glass rounded-full flex items-center justify-center text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          </button>
+        )}
+
+        {/* 右クリックエリア（次のスライド） */}
+        {currentIndex < totalSlides - 1 && (
+          <button
+            onClick={nextSlide}
+            className="absolute right-0 top-0 h-full w-24 cursor-pointer opacity-0 hover:opacity-100 transition-opacity duration-300 group z-10"
+            aria-label="次のスライド"
+          >
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 glass rounded-full flex items-center justify-center text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          </button>
+        )}
 
         <SlideNavigation
           currentIndex={currentIndex}
